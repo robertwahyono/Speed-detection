@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Speed Detector — BRC</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&family=Share+Tech+Mono&display=swap');
+
+  :root {
+    --bg:        #0a0c0f;
+    --panel:     #111419;
+    --border:    #1e2530;
+    --safe:      #00e5a0;
+    --warn:      #ff4d4d;
+    --amber:     #ffb830;
+    --text:      #c8d0dc;
+    --dim:       #4a5568;
+    --glow-safe: 0 0 18px #00e5a055, 0 0 40px #00e5a022;
+    --glow-warn: 0 0 18px #ff4d4d88, 0 0 50px #ff4d4d33;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ── layout ── */
+  .app {
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 16px 24px;
+    position: relative;
+  }
+
+  /* ── header ── */
+  header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .brand {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    color: var(--dim);
+    text-transform: uppercase;
+  }
+
+  .gps-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--dim);
+    transition: background .4s, box-shadow .4s;
+  }
+  .dot.active  { background: var(--safe); box-shadow: 0 0 8px var(--safe); }
+  .dot.warning { background: var(--warn); box-shadow: 0 0 8px var(--warn); animation: blink .5s infinite; }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+  /* ── speedometer ring ── */
+  .meter-wrap {
+    position: relative;
+    width: min(320px, 82vw);
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  svg.ring {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    transform: rotate(-135deg);
+  }
+
+  .track { fill: none; stroke: var(--border); stroke-width: 10; }
+  .arc   {
+    fill: none;
+    stroke: var(--safe);
+    stroke-width: 10;
+    stroke-linecap: round;
+    stroke-dasharray: 527;   /* circumference of r=84 × 0.75 arc ≈ 527 */
+    stroke-dashoffset: 527;
+    transition: stroke-dashoffset .35s cubic-bezier(.4,0,.2,1),
+                stroke .35s;
+    filter: drop-shadow(0 0 6px var(--safe));
+  }
+  .arc.over { stroke: var(--warn); filter: drop-shadow(0 0 8px var(--warn)); }
+
+  /* tick marks */
+  .ticks { fill: none; stroke: var(--border); stroke-width: 2; }
+  .tick-label { fill: var(--dim); font-family: 'Share Tech Mono',monospace; font-size: 9px; }
+
+  /* speed readout */
+  .readout {
+    text-align: center;
+    z-index: 1;
+    line-height: 1;
+  }
+
+  .speed-num {
+    font-size: clamp(72px, 20vw, 96px);
+    font-weight: 700;
+    letter-spacing: -2px;
+    color: var(--safe);
+    text-shadow: var(--glow-safe);
+    transition: color .3s, text-shadow .3s;
+    font-variant-numeric: tabular-nums;
+  }
+  .speed-num.over {
+    color: var(--warn);
+    text-shadow: var(--glow-warn);
+    animation: shake .08s infinite;
+  }
+  @keyframes shake { 0%,100%{transform:translateX(0)} 50%{transform:translateX(2px)} }
+
+  .unit {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-top: 4px;
+  }
+
+  /* ── alert banner ── */
+  .alert-banner {
+    width: 100%;
+    padding: 10px 16px;
+    border-radius: 8px;
+    background: transparent;
+    border: 1px solid transparent;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all .3s;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .alert-banner.over {
+    background: #ff4d4d18;
+    border-color: var(--warn);
+    color: var(--warn);
+    box-shadow: 0 0 20px #ff4d4d22;
+    animation: pulse-border .8s infinite;
+  }
+  @keyframes pulse-border {
+    0%,100% { box-shadow: 0 0 12px #ff4d4d22; }
+    50%      { box-shadow: 0 0 28px #ff4d4d55; }
+  }
+
+  /* ── stats row ── */
+  .stats {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 10px;
+  }
+
+  .stat-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+
+  .stat-val {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 22px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .stat-lbl {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── limit badge ── */
+  .limit-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+
+  .limit-badge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    border: 3px solid var(--amber);
+    color: var(--amber);
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0;
+  }
+
+  /* ── bottom controls ── */
+  .controls {
+    width: 100%;
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn {
+    flex: 1;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--panel);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: border-color .2s, color .2s, box-shadow .2s;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn:active { transform: scale(.97); }
+
+  .btn.start {
+    border-color: var(--safe);
+    color: var(--safe);
+    box-shadow: 0 0 12px #00e5a022;
+  }
+  .btn.stop  { border-color: var(--warn); color: var(--warn); }
+  .btn.mute  { border-color: var(--amber); color: var(--amber); }
+
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+
+  /* ── accuracy chip ── */
+  .accuracy-chip {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    letter-spacing: 1px;
+  }
+
+  /* ── offline badge ── */
+  .offline-badge {
+    position: absolute;
+    top: 20px; left: 50%; transform: translateX(-50%);
+    background: #1a1f2b;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--safe);
+    display: flex; align-items: center; gap: 5px;
+  }
+  .offline-badge::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--safe);
+    box-shadow: 0 0 6px var(--safe);
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- header -->
+  <header>
+    <span class="brand">SpeedGuard</span>
+    <span class="gps-status">
+      <span class="dot" id="gps-dot"></span>
+      <span id="gps-label">GPS OFF</span>
+    </span>
+  </header>
+
+  <!-- speedometer -->
+  <div class="meter-wrap">
+    <svg class="ring" viewBox="0 0 220 220">
+      <!-- 270° arc track: start top-left, sweep 270 deg -->
+      <!-- center 110,110 r=84 -->
+      <circle class="track"
+        cx="110" cy="110" r="84"
+        stroke-dasharray="527 176"
+        stroke-dashoffset="0"/>
+      <circle class="arc" id="speed-arc"
+        cx="110" cy="110" r="84"
+        stroke-dasharray="527 176"/>
+
+      <!-- tick marks every 20 km/h, max 120 -->
+      <!-- generated inline via JS -->
+      <g id="tick-group"></g>
+    </svg>
+
+    <div class="readout">
+      <div class="speed-num" id="speed-num">0</div>
+      <div class="unit">KM / JAM</div>
+      <div class="accuracy-chip" id="acc-chip"></div>
+    </div>
+  </div>
+
+  <!-- alert -->
+  <div class="alert-banner" id="alert-banner">SISTEM SIAP</div>
+
+  <!-- limit row -->
+  <div class="limit-row">
+    <div class="limit-badge">30</div>
+    <span>Batas kecepatan peringatan</span>
+  </div>
+
+  <!-- stats -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-val" id="stat-max">0</div>
+      <div class="stat-lbl">Max km/h</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-avg">0</div>
+      <div class="stat-lbl">Rata-rata</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="stat-dur">0:00</div>
+      <div class="stat-lbl">Durasi</div>
+    </div>
+  </div>
+
+  <!-- controls -->
+  <div class="controls">
+    <button class="btn start" id="btn-start" onclick="startTracking()">▶ MULAI</button>
+    <button class="btn stop"  id="btn-stop"  onclick="stopTracking()" disabled>■ STOP</button>
+    <button class="btn mute"  id="btn-mute"  onclick="toggleMute()">🔊 SUARA</button>
+  </div>
+
+</div>
+
+<script>
+/* ─── state ─── */
+let watchId = null;
+let muted   = false;
+let maxSpeed  = 0;
+let speedSum  = 0;
+let speedCount= 0;
+let startTime = null;
+let durTimer  = null;
+let overAlert = false;
+let audioCtx  = null;
+let beepInterval = null;
+let LIMIT = 30; // km/h
+
+/* ─── DOM refs ─── */
+const $num    = document.getElementById('speed-num');
+const $arc    = document.getElementById('speed-arc');
+const $dot    = document.getElementById('gps-dot');
+const $lbl    = document.getElementById('gps-label');
+const $banner = document.getElementById('alert-banner');
+const $max    = document.getElementById('stat-max');
+const $avg    = document.getElementById('stat-avg');
+const $dur    = document.getElementById('stat-dur');
+const $acc    = document.getElementById('acc-chip');
+const $start  = document.getElementById('btn-start');
+const $stop   = document.getElementById('btn-stop');
+const $mute   = document.getElementById('btn-mute');
+
+/* ─── draw tick marks ─── */
+(function drawTicks() {
+  const g = document.getElementById('tick-group');
+  const cx = 110, cy = 110, r = 84;
+  const startDeg = -135, totalDeg = 270;
+  const maxKmh = 120;
+
+  for (let kmh = 0; kmh <= maxKmh; kmh += 10) {
+    const frac = kmh / maxKmh;
+    const deg  = startDeg + frac * totalDeg;
+    const rad  = deg * Math.PI / 180;
+    const isMajor = kmh % 20 === 0;
+    const len  = isMajor ? 10 : 6;
+    const r1   = r - 2, r2 = r1 - len;
+
+    const x1 = cx + r1 * Math.cos(rad);
+    const y1 = cy + r1 * Math.sin(rad);
+    const x2 = cx + r2 * Math.cos(rad);
+    const y2 = cy + r2 * Math.sin(rad);
+
+    const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('stroke', isMajor ? '#2e3a4a' : '#1a2030');
+    line.setAttribute('stroke-width', isMajor ? '2' : '1');
+    g.appendChild(line);
+
+    if (isMajor) {
+      const lx = cx + (r2 - 10) * Math.cos(rad);
+      const ly = cy + (r2 - 10) * Math.sin(rad);
+      const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
+      txt.setAttribute('x', lx); txt.setAttribute('y', ly);
+      txt.setAttribute('fill', '#3a4a5a');
+      txt.setAttribute('font-family', 'Share Tech Mono, monospace');
+      txt.setAttribute('font-size', '9');
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('dominant-baseline', 'middle');
+      txt.textContent = kmh;
+      g.appendChild(txt);
+    }
+  }
+})();
+
+/* ─── arc update ─── */
+function setArc(kmh) {
+  const maxKmh = 120;
+  const totalDash = 527;
+  const frac   = Math.min(kmh, maxKmh) / maxKmh;
+  const offset = totalDash - frac * totalDash;
+  $arc.style.strokeDashoffset = offset;
+
+  const over = kmh >= LIMIT;
+  $arc.classList.toggle('over', over);
+}
+
+/* ─── audio beep via Web Audio API (offline) ─── */
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function beep(freq = 880, duration = 0.12, vol = 0.4) {
+  if (muted) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = freq;
+    osc.type = 'square';
+    gain.gain.setValueAtTime(vol, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + duration + 0.01);
+  } catch(e) {}
+}
+
+function startAlertBeep() {
+  if (beepInterval) return;
+  beep(1100, 0.15);
+  beepInterval = setInterval(() => beep(1100, 0.15), 600);
+}
+
+function stopAlertBeep() {
+  clearInterval(beepInterval);
+  beepInterval = null;
+}
+
+/* ─── speed update ─── */
+function onPosition(pos) {
+  const mps  = pos.coords.speed;   // m/s or null
+  const kmh  = mps != null ? mps * 3.6 : 0;
+  const kmhR = Math.round(kmh);
+  const acc  = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+
+  setArc(kmhR);
+  $num.textContent = kmhR;
+  $acc.textContent = acc ? `±${acc}m` : '';
+
+  // stats
+  if (startTime) {
+    if (kmhR > maxSpeed) { maxSpeed = kmhR; $max.textContent = maxSpeed; }
+    speedSum += kmhR; speedCount++;
+    $avg.textContent = Math.round(speedSum / speedCount);
+  }
+
+  const over = kmhR >= LIMIT;
+
+  if (over && !overAlert) {
+    overAlert = true;
+    $num.classList.add('over');
+    $banner.classList.add('over');
+    $banner.textContent = `⚠ KECEPATAN BERLEBIH — ${kmhR} KM/H`;
+    $dot.classList.add('warning');
+    startAlertBeep();
+  } else if (!over && overAlert) {
+    overAlert = false;
+    $num.classList.remove('over');
+    $banner.classList.remove('over');
+    $banner.textContent = 'KECEPATAN AMAN';
+    $dot.classList.remove('warning');
+    stopAlertBeep();
+  } else if (over) {
+    $banner.textContent = `⚠ KECEPATAN BERLEBIH — ${kmhR} KM/H`;
+  }
+}
+
+function onError(err) {
+  const msgs = {
+    1: 'Izin GPS ditolak',
+    2: 'GPS tidak tersedia',
+    3: 'Timeout GPS'
+  };
+  $lbl.textContent = msgs[err.code] || 'GPS ERROR';
+  $dot.classList.remove('active');
+  $banner.textContent = msgs[err.code] || 'GPS ERROR';
+}
+
+/* ─── tracking control ─── */
+function startTracking() {
+  if (!navigator.geolocation) {
+    alert('Browser ini tidak mendukung GPS.');
+    return;
+  }
+
+  // unlock AudioContext (needs user gesture)
+  try { getAudioCtx().resume(); } catch(e) {}
+
+  navigator.geolocation.getCurrentPosition(() => {}, () => {});
+
+  watchId = navigator.geolocation.watchPosition(onPosition, onError, {
+    enableHighAccuracy: true,
+    maximumAge: 0,
+    timeout: 10000
+  });
+
+  maxSpeed = 0; speedSum = 0; speedCount = 0;
+  startTime = Date.now();
+  $max.textContent = '0';
+  $avg.textContent = '0';
+
+  // duration timer
+  durTimer = setInterval(() => {
+    const s = Math.floor((Date.now() - startTime) / 1000);
+    const m = Math.floor(s / 60);
+    $dur.textContent = `${m}:${String(s%60).padStart(2,'0')}`;
+  }, 1000);
+
+  $dot.classList.add('active');
+  $lbl.textContent = 'GPS AKTIF';
+  $banner.textContent = 'MEMANTAU KECEPATAN…';
+
+  $start.disabled = true;
+  $stop.disabled  = false;
+}
+
+function stopTracking() {
+  if (watchId != null) {
+    navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+  }
+  clearInterval(durTimer);
+  stopAlertBeep();
+
+  overAlert = false;
+  $num.textContent  = '0';
+  $num.classList.remove('over');
+  $banner.classList.remove('over');
+  setArc(0);
+
+  $dot.classList.remove('active','warning');
+  $lbl.textContent    = 'GPS OFF';
+  $banner.textContent = 'PEMANTAUAN DIHENTIKAN';
+  $acc.textContent    = '';
+
+  $start.disabled = false;
+  $stop.disabled  = true;
+}
+
+function toggleMute() {
+  muted = !muted;
+  $mute.textContent = muted ? '🔇 BISU' : '🔊 SUARA';
+  $mute.style.color = muted ? '#4a5568' : '';
+  $mute.style.borderColor = muted ? '#4a5568' : '';
+  if (muted) stopAlertBeep();
+  else if (overAlert) startAlertBeep();
+}
+</script>
+</body>
+</html>
