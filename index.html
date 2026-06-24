@@ -31,7 +31,6 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ── layout ── */
   .app {
     height: 100dvh;
     display: flex;
@@ -42,7 +41,6 @@
     position: relative;
   }
 
-  /* ── header ── */
   header {
     width: 100%;
     display: flex;
@@ -79,10 +77,9 @@
 
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* ── speedometer ring ── */
   .meter-wrap {
     position: relative;
-    width: min(320px, 82vw);
+    width: min(300px, 78vw);
     aspect-ratio: 1;
     display: flex;
     align-items: center;
@@ -102,19 +99,13 @@
     stroke: var(--safe);
     stroke-width: 10;
     stroke-linecap: round;
-    stroke-dasharray: 527;   /* circumference of r=84 × 0.75 arc ≈ 527 */
+    stroke-dasharray: 527;
     stroke-dashoffset: 527;
-    transition: stroke-dashoffset .35s cubic-bezier(.4,0,.2,1),
-                stroke .35s;
+    transition: stroke-dashoffset .35s cubic-bezier(.4,0,.2,1), stroke .35s;
     filter: drop-shadow(0 0 6px var(--safe));
   }
   .arc.over { stroke: var(--warn); filter: drop-shadow(0 0 8px var(--warn)); }
 
-  /* tick marks */
-  .ticks { fill: none; stroke: var(--border); stroke-width: 2; }
-  .tick-label { fill: var(--dim); font-family: 'Share Tech Mono',monospace; font-size: 9px; }
-
-  /* speed readout */
   .readout {
     text-align: center;
     z-index: 1;
@@ -122,7 +113,7 @@
   }
 
   .speed-num {
-    font-size: clamp(72px, 20vw, 96px);
+    font-size: clamp(64px, 18vw, 88px);
     font-weight: 700;
     letter-spacing: -2px;
     color: var(--safe);
@@ -138,27 +129,26 @@
   @keyframes shake { 0%,100%{transform:translateX(0)} 50%{transform:translateX(2px)} }
 
   .unit {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
     letter-spacing: 3px;
     color: var(--dim);
     margin-top: 4px;
   }
 
-  /* ── alert banner ── */
   .alert-banner {
     width: 100%;
-    padding: 10px 16px;
+    padding: 9px 16px;
     border-radius: 8px;
     background: transparent;
     border: 1px solid transparent;
     text-align: center;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: 700;
     letter-spacing: 2px;
     text-transform: uppercase;
     transition: all .3s;
-    min-height: 44px;
+    min-height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -167,7 +157,6 @@
     background: #ff4d4d18;
     border-color: var(--warn);
     color: var(--warn);
-    box-shadow: 0 0 20px #ff4d4d22;
     animation: pulse-border .8s infinite;
   }
   @keyframes pulse-border {
@@ -175,43 +164,41 @@
     50%      { box-shadow: 0 0 28px #ff4d4d55; }
   }
 
-  /* ── stats row ── */
   .stats {
     width: 100%;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    gap: 10px;
+    gap: 8px;
   }
 
   .stat-card {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: 10px;
-    padding: 12px 8px;
+    padding: 10px 6px;
     text-align: center;
   }
 
   .stat-val {
     font-family: 'Share Tech Mono', monospace;
-    font-size: 22px;
+    font-size: 20px;
     color: var(--text);
     line-height: 1;
   }
 
   .stat-lbl {
-    font-size: 10px;
+    font-size: 9px;
     letter-spacing: 2px;
     color: var(--dim);
     text-transform: uppercase;
     margin-top: 4px;
   }
 
-  /* ── limit badge ── */
   .limit-row {
     display: flex;
     align-items: center;
     gap: 10px;
-    font-size: 13px;
+    font-size: 12px;
     color: var(--dim);
     letter-spacing: 1px;
   }
@@ -220,52 +207,51 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px; height: 44px;
+    width: 40px; height: 40px;
     border-radius: 50%;
     border: 3px solid var(--amber);
     color: var(--amber);
     font-weight: 700;
-    font-size: 14px;
-    letter-spacing: 0;
+    font-size: 13px;
   }
 
-  /* ── bottom controls ── */
   .controls {
     width: 100%;
-    display: flex;
-    gap: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .controls-row2 {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
   }
 
   .btn {
-    flex: 1;
-    padding: 14px;
+    padding: 12px 6px;
     border: 1px solid var(--border);
     border-radius: 10px;
     background: var(--panel);
     color: var(--text);
     font-family: 'Rajdhani', sans-serif;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 700;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-transform: uppercase;
     cursor: pointer;
     transition: border-color .2s, color .2s, box-shadow .2s;
     -webkit-tap-highlight-color: transparent;
   }
-
   .btn:active { transform: scale(.97); }
-
-  .btn.start {
-    border-color: var(--safe);
-    color: var(--safe);
-    box-shadow: 0 0 12px #00e5a022;
-  }
+  .btn.start { border-color: var(--safe); color: var(--safe); }
   .btn.stop  { border-color: var(--warn); color: var(--warn); }
   .btn.mute  { border-color: var(--amber); color: var(--amber); }
-
+  .btn.save  { border-color: #7c5cfc; color: #7c5cfc; }
+  .btn.log   { border-color: #38bdf8; color: #38bdf8; }
   .btn:disabled { opacity: .35; cursor: not-allowed; }
 
-  /* ── accuracy chip ── */
   .accuracy-chip {
     font-family: 'Share Tech Mono', monospace;
     font-size: 10px;
@@ -273,26 +259,202 @@
     letter-spacing: 1px;
   }
 
-  /* ── offline badge ── */
-  .offline-badge {
-    position: absolute;
-    top: 20px; left: 50%; transform: translateX(-50%);
-    background: #1a1f2b;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3px 12px;
-    font-size: 10px;
-    letter-spacing: 2px;
-    color: var(--safe);
-    display: flex; align-items: center; gap: 5px;
+  /* ════════════════════════════════
+     POPUP ALERT OVERSPEED
+  ════════════════════════════════ */
+  .popup-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.75);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+    backdrop-filter: blur(4px);
   }
-  .offline-badge::before {
-    content: '';
-    display: inline-block;
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--safe);
-    box-shadow: 0 0 6px var(--safe);
+  .popup-overlay.show {
+    opacity: 1; pointer-events: all;
+  }
+
+  .popup {
+    width: min(320px, 90vw);
+    background: #0f1318;
+    border: 1px solid var(--warn);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    box-shadow: 0 0 40px #ff4d4d33;
+    transform: scale(.9);
+    transition: transform .25s;
+  }
+  .popup-overlay.show .popup { transform: scale(1); }
+
+  .popup-icon {
+    font-size: 48px;
+    margin-bottom: 12px;
+    animation: icon-pulse 1s infinite;
+  }
+  @keyframes icon-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+
+  .popup-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--warn);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .popup-speed {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 48px;
+    color: var(--warn);
+    text-shadow: var(--glow-warn);
+    line-height: 1;
+    margin: 8px 0;
+  }
+
+  .popup-unit {
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--dim);
+    margin-bottom: 16px;
+  }
+
+  .popup-time {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--dim);
+    margin-bottom: 20px;
+  }
+
+  .popup-btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: 10px;
+    background: var(--warn);
+    color: #fff;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .popup-btn:active { transform: scale(.97); }
+
+  /* ════════════════════════════════
+     LOG PANEL
+  ════════════════════════════════ */
+  .log-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.85);
+    display: flex; align-items: flex-end; justify-content: center;
+    z-index: 200;
+    opacity: 0; pointer-events: none;
+    transition: opacity .25s;
+  }
+  .log-overlay.show { opacity: 1; pointer-events: all; }
+
+  .log-panel {
+    width: 100%; max-height: 75vh;
+    background: #0d1117;
+    border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0;
+    display: flex; flex-direction: column;
+    transform: translateY(100%);
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+  }
+  .log-overlay.show .log-panel { transform: translateY(0); }
+
+  .log-header {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .log-title {
+    font-size: 14px; font-weight: 700;
+    letter-spacing: 3px; text-transform: uppercase;
+    color: #38bdf8;
+  }
+
+  .log-actions { display: flex; gap: 10px; }
+
+  .log-action-btn {
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: 1px solid;
+    background: transparent;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    cursor: pointer;
+  }
+  .log-action-btn.dl  { border-color: #7c5cfc; color: #7c5cfc; }
+  .log-action-btn.clr { border-color: var(--warn); color: var(--warn); }
+  .log-action-btn.cls { border-color: var(--dim); color: var(--dim); }
+
+  .log-body {
+    overflow-y: auto;
+    flex: 1;
+    padding: 8px 0;
+  }
+
+  .log-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--dim);
+    font-size: 13px;
+    letter-spacing: 1px;
+  }
+
+  .log-item {
+    display: grid;
+    grid-template-columns: 56px 1fr 70px;
+    align-items: center;
+    padding: 10px 20px;
+    border-bottom: 1px solid #0f1520;
+    gap: 12px;
+  }
+
+  .log-kmh {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 22px;
+    color: var(--warn);
+    line-height: 1;
+  }
+  .log-kmh span { font-size: 10px; color: var(--dim); }
+
+  .log-info { display: flex; flex-direction: column; gap: 2px; }
+
+  .log-date {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; color: var(--text);
+  }
+
+  .log-coords {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px; color: var(--dim);
+  }
+
+  .log-badge {
+    background: #ff4d4d22;
+    border: 1px solid var(--warn);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--warn);
+    letter-spacing: 1px;
+    text-align: center;
+  }
+
+  .log-count {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--dim);
+    padding: 8px 20px 2px;
   }
 </style>
 </head>
@@ -311,21 +473,12 @@
   <!-- speedometer -->
   <div class="meter-wrap">
     <svg class="ring" viewBox="0 0 220 220">
-      <!-- 270° arc track: start top-left, sweep 270 deg -->
-      <!-- center 110,110 r=84 -->
-      <circle class="track"
-        cx="110" cy="110" r="84"
-        stroke-dasharray="527 176"
-        stroke-dashoffset="0"/>
-      <circle class="arc" id="speed-arc"
-        cx="110" cy="110" r="84"
+      <circle class="track" cx="110" cy="110" r="84"
+        stroke-dasharray="527 176" stroke-dashoffset="0"/>
+      <circle class="arc" id="speed-arc" cx="110" cy="110" r="84"
         stroke-dasharray="527 176"/>
-
-      <!-- tick marks every 20 km/h, max 120 -->
-      <!-- generated inline via JS -->
       <g id="tick-group"></g>
     </svg>
-
     <div class="readout">
       <div class="speed-num" id="speed-num">0</div>
       <div class="unit">KM / JAM</div>
@@ -333,7 +486,7 @@
     </div>
   </div>
 
-  <!-- alert -->
+  <!-- alert banner -->
   <div class="alert-banner" id="alert-banner">SISTEM SIAP</div>
 
   <!-- limit row -->
@@ -358,28 +511,65 @@
     </div>
   </div>
 
-  <!-- controls -->
+  <!-- controls row 1 -->
   <div class="controls">
     <button class="btn start" id="btn-start" onclick="startTracking()">▶ MULAI</button>
     <button class="btn stop"  id="btn-stop"  onclick="stopTracking()" disabled>■ STOP</button>
-    <button class="btn mute"  id="btn-mute"  onclick="toggleMute()">🔊 SUARA</button>
+  </div>
+
+  <!-- controls row 2 -->
+  <div class="controls-row2">
+    <button class="btn mute" id="btn-mute" onclick="toggleMute()">🔊 SUARA</button>
+    <button class="btn log"  onclick="openLog()">📋 LOG <span id="log-badge-count"></span></button>
   </div>
 
 </div>
 
+<!-- ══ POPUP OVERSPEED ══ -->
+<div class="popup-overlay" id="popup-overlay">
+  <div class="popup">
+    <div class="popup-icon">⚠️</div>
+    <div class="popup-title">Kecepatan Berlebih!</div>
+    <div class="popup-speed" id="popup-speed">0</div>
+    <div class="popup-unit">KM / JAM</div>
+    <div class="popup-time" id="popup-time"></div>
+    <button class="popup-btn" onclick="closePopup()">✓ MENGERTI, KURANGI KECEPATAN</button>
+  </div>
+</div>
+
+<!-- ══ LOG PANEL ══ -->
+<div class="log-overlay" id="log-overlay">
+  <div class="log-panel">
+    <div class="log-header">
+      <span class="log-title">📋 Riwayat Pelanggaran</span>
+      <div class="log-actions">
+        <button class="log-action-btn dl"  onclick="downloadCSV()">⬇ CSV</button>
+        <button class="log-action-btn clr" onclick="clearLog()">🗑 Hapus</button>
+        <button class="log-action-btn cls" onclick="closeLog()">✕</button>
+      </div>
+    </div>
+    <div class="log-count" id="log-count"></div>
+    <div class="log-body" id="log-body">
+      <div class="log-empty">Belum ada data pelanggaran</div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ─── state ─── */
-let watchId = null;
-let muted   = false;
-let maxSpeed  = 0;
-let speedSum  = 0;
-let speedCount= 0;
-let startTime = null;
-let durTimer  = null;
-let overAlert = false;
-let audioCtx  = null;
-let beepInterval = null;
-let LIMIT = 30; // km/h
+let watchId = null, muted = false;
+let maxSpeed = 0, speedSum = 0, speedCount = 0;
+let startTime = null, durTimer = null;
+let overAlert = false, popupOpen = false;
+let audioCtx = null, beepInterval = null;
+const LIMIT = 30;
+
+/* violation log — persisted in localStorage */
+let violationLog = [];
+try {
+  const saved = localStorage.getItem('speedguard_log');
+  if (saved) violationLog = JSON.parse(saved);
+} catch(e) {}
 
 /* ─── DOM refs ─── */
 const $num    = document.getElementById('speed-num');
@@ -395,106 +585,174 @@ const $start  = document.getElementById('btn-start');
 const $stop   = document.getElementById('btn-stop');
 const $mute   = document.getElementById('btn-mute');
 
-/* ─── draw tick marks ─── */
+/* ─── tick marks ─── */
 (function drawTicks() {
   const g = document.getElementById('tick-group');
   const cx = 110, cy = 110, r = 84;
-  const startDeg = -135, totalDeg = 270;
-  const maxKmh = 120;
-
+  const startDeg = -135, totalDeg = 270, maxKmh = 120;
   for (let kmh = 0; kmh <= maxKmh; kmh += 10) {
-    const frac = kmh / maxKmh;
-    const deg  = startDeg + frac * totalDeg;
-    const rad  = deg * Math.PI / 180;
+    const rad = (startDeg + (kmh/maxKmh)*totalDeg) * Math.PI / 180;
     const isMajor = kmh % 20 === 0;
-    const len  = isMajor ? 10 : 6;
-    const r1   = r - 2, r2 = r1 - len;
-
-    const x1 = cx + r1 * Math.cos(rad);
-    const y1 = cy + r1 * Math.sin(rad);
-    const x2 = cx + r2 * Math.cos(rad);
-    const y2 = cy + r2 * Math.sin(rad);
-
+    const r1 = r-2, r2 = r1 - (isMajor ? 10 : 6);
     const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-    line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+    line.setAttribute('x1', cx+r1*Math.cos(rad)); line.setAttribute('y1', cy+r1*Math.sin(rad));
+    line.setAttribute('x2', cx+r2*Math.cos(rad)); line.setAttribute('y2', cy+r2*Math.sin(rad));
     line.setAttribute('stroke', isMajor ? '#2e3a4a' : '#1a2030');
     line.setAttribute('stroke-width', isMajor ? '2' : '1');
     g.appendChild(line);
-
     if (isMajor) {
-      const lx = cx + (r2 - 10) * Math.cos(rad);
-      const ly = cy + (r2 - 10) * Math.sin(rad);
+      const lx = cx+(r2-10)*Math.cos(rad), ly = cy+(r2-10)*Math.sin(rad);
       const txt = document.createElementNS('http://www.w3.org/2000/svg','text');
       txt.setAttribute('x', lx); txt.setAttribute('y', ly);
-      txt.setAttribute('fill', '#3a4a5a');
-      txt.setAttribute('font-family', 'Share Tech Mono, monospace');
-      txt.setAttribute('font-size', '9');
-      txt.setAttribute('text-anchor', 'middle');
-      txt.setAttribute('dominant-baseline', 'middle');
-      txt.textContent = kmh;
+      txt.setAttribute('fill','#3a4a5a'); txt.setAttribute('font-family','Share Tech Mono,monospace');
+      txt.setAttribute('font-size','9'); txt.setAttribute('text-anchor','middle');
+      txt.setAttribute('dominant-baseline','middle'); txt.textContent = kmh;
       g.appendChild(txt);
     }
   }
 })();
 
-/* ─── arc update ─── */
+/* ─── arc ─── */
 function setArc(kmh) {
-  const maxKmh = 120;
-  const totalDash = 527;
-  const frac   = Math.min(kmh, maxKmh) / maxKmh;
-  const offset = totalDash - frac * totalDash;
-  $arc.style.strokeDashoffset = offset;
-
-  const over = kmh >= LIMIT;
-  $arc.classList.toggle('over', over);
+  const frac = Math.min(kmh, 120) / 120;
+  $arc.style.strokeDashoffset = 527 - frac * 527;
+  $arc.classList.toggle('over', kmh >= LIMIT);
 }
 
-/* ─── audio beep via Web Audio API (offline) ─── */
+/* ─── audio ─── */
 function getAudioCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
-
-function beep(freq = 880, duration = 0.12, vol = 0.4) {
+function beep(freq=880, dur=0.12, vol=0.4) {
   if (muted) return;
   try {
     const ctx = getAudioCtx();
-    const osc  = ctx.createOscillator();
-    const gain = ctx.createGain();
+    const osc = ctx.createOscillator(), gain = ctx.createGain();
     osc.connect(gain); gain.connect(ctx.destination);
-    osc.frequency.value = freq;
-    osc.type = 'square';
+    osc.frequency.value = freq; osc.type = 'square';
     gain.gain.setValueAtTime(vol, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + duration + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + dur);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime + dur + 0.01);
   } catch(e) {}
 }
-
 function startAlertBeep() {
   if (beepInterval) return;
   beep(1100, 0.15);
   beepInterval = setInterval(() => beep(1100, 0.15), 600);
 }
+function stopAlertBeep() { clearInterval(beepInterval); beepInterval = null; }
 
-function stopAlertBeep() {
-  clearInterval(beepInterval);
-  beepInterval = null;
+/* ─── popup ─── */
+let popupCooldown = false;
+
+function showPopup(kmh, lat, lon) {
+  if (popupCooldown) return;
+  popupCooldown = true;
+  setTimeout(() => { popupCooldown = false; }, 15000); // max 1x per 15 detik
+
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('id-ID');
+  const dateStr = now.toLocaleDateString('id-ID', {day:'2-digit',month:'short',year:'numeric'});
+
+  document.getElementById('popup-speed').textContent = kmh;
+  document.getElementById('popup-time').textContent = `${dateStr}  •  ${timeStr}`;
+
+  document.getElementById('popup-overlay').classList.add('show');
+  popupOpen = true;
+
+  // simpan ke log
+  const entry = {
+    kmh, lat: lat ? lat.toFixed(6) : '-', lon: lon ? lon.toFixed(6) : '-',
+    date: dateStr, time: timeStr,
+    ts: now.toISOString()
+  };
+  violationLog.unshift(entry);
+  try { localStorage.setItem('speedguard_log', JSON.stringify(violationLog.slice(0,200))); } catch(e){}
+  updateLogBadge();
 }
 
-/* ─── speed update ─── */
+function closePopup() {
+  document.getElementById('popup-overlay').classList.remove('show');
+  popupOpen = false;
+}
+
+/* ─── log panel ─── */
+function openLog() {
+  renderLog();
+  document.getElementById('log-overlay').classList.add('show');
+}
+function closeLog() {
+  document.getElementById('log-overlay').classList.remove('show');
+}
+
+function renderLog() {
+  const body = document.getElementById('log-body');
+  const count = document.getElementById('log-count');
+  if (violationLog.length === 0) {
+    body.innerHTML = '<div class="log-empty">Belum ada data pelanggaran</div>';
+    count.textContent = '';
+    return;
+  }
+  count.textContent = `Total: ${violationLog.length} pelanggaran`;
+  body.innerHTML = violationLog.map(v => `
+    <div class="log-item">
+      <div class="log-kmh">${v.kmh}<br><span>km/h</span></div>
+      <div class="log-info">
+        <div class="log-date">${v.date} ${v.time}</div>
+        <div class="log-coords">${v.lat !== '-' ? `${v.lat}, ${v.lon}` : 'Koordinat tidak tersedia'}</div>
+      </div>
+      <div class="log-badge">LEBIH<br>BATAS</div>
+    </div>
+  `).join('');
+}
+
+function updateLogBadge() {
+  const el = document.getElementById('log-badge-count');
+  el.textContent = violationLog.length > 0 ? `(${violationLog.length})` : '';
+}
+
+function clearLog() {
+  if (!confirm('Hapus semua data log?')) return;
+  violationLog = [];
+  try { localStorage.removeItem('speedguard_log'); } catch(e){}
+  updateLogBadge();
+  renderLog();
+}
+
+/* ─── download CSV ─── */
+function downloadCSV() {
+  if (violationLog.length === 0) { alert('Tidak ada data untuk didownload.'); return; }
+  const header = 'No,Tanggal,Waktu,Kecepatan (km/h),Latitude,Longitude\n';
+  const rows = violationLog.map((v,i) =>
+    `${i+1},"${v.date}","${v.time}",${v.kmh},${v.lat},${v.lon}`
+  ).join('\n');
+  const csv = '\uFEFF' + header + rows; // BOM for Excel
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url;
+  a.download = `speedguard_log_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+/* ─── position handler ─── */
+let lastLat = null, lastLon = null;
+
 function onPosition(pos) {
-  const mps  = pos.coords.speed;   // m/s or null
+  const mps  = pos.coords.speed;
   const kmh  = mps != null ? mps * 3.6 : 0;
   const kmhR = Math.round(kmh);
   const acc  = pos.coords.accuracy ? Math.round(pos.coords.accuracy) : null;
+  lastLat = pos.coords.latitude;
+  lastLon = pos.coords.longitude;
 
   setArc(kmhR);
   $num.textContent = kmhR;
   $acc.textContent = acc ? `±${acc}m` : '';
 
-  // stats
   if (startTime) {
     if (kmhR > maxSpeed) { maxSpeed = kmhR; $max.textContent = maxSpeed; }
     speedSum += kmhR; speedCount++;
@@ -510,6 +768,7 @@ function onPosition(pos) {
     $banner.textContent = `⚠ KECEPATAN BERLEBIH — ${kmhR} KM/H`;
     $dot.classList.add('warning');
     startAlertBeep();
+    showPopup(kmhR, lastLat, lastLon);
   } else if (!over && overAlert) {
     overAlert = false;
     $num.classList.remove('over');
@@ -523,11 +782,7 @@ function onPosition(pos) {
 }
 
 function onError(err) {
-  const msgs = {
-    1: 'Izin GPS ditolak',
-    2: 'GPS tidak tersedia',
-    3: 'Timeout GPS'
-  };
+  const msgs = {1:'Izin GPS ditolak',2:'GPS tidak tersedia',3:'Timeout GPS'};
   $lbl.textContent = msgs[err.code] || 'GPS ERROR';
   $dot.classList.remove('active');
   $banner.textContent = msgs[err.code] || 'GPS ERROR';
@@ -535,63 +790,36 @@ function onError(err) {
 
 /* ─── tracking control ─── */
 function startTracking() {
-  if (!navigator.geolocation) {
-    alert('Browser ini tidak mendukung GPS.');
-    return;
-  }
-
-  // unlock AudioContext (needs user gesture)
+  if (!navigator.geolocation) { alert('Browser ini tidak mendukung GPS.'); return; }
   try { getAudioCtx().resume(); } catch(e) {}
-
-  navigator.geolocation.getCurrentPosition(() => {}, () => {});
-
+  navigator.geolocation.getCurrentPosition(()=>{},()=>{});
   watchId = navigator.geolocation.watchPosition(onPosition, onError, {
-    enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 10000
+    enableHighAccuracy: true, maximumAge: 0, timeout: 10000
   });
-
   maxSpeed = 0; speedSum = 0; speedCount = 0;
   startTime = Date.now();
-  $max.textContent = '0';
-  $avg.textContent = '0';
-
-  // duration timer
+  $max.textContent = '0'; $avg.textContent = '0';
   durTimer = setInterval(() => {
-    const s = Math.floor((Date.now() - startTime) / 1000);
-    const m = Math.floor(s / 60);
+    const s = Math.floor((Date.now()-startTime)/1000), m = Math.floor(s/60);
     $dur.textContent = `${m}:${String(s%60).padStart(2,'0')}`;
   }, 1000);
-
   $dot.classList.add('active');
   $lbl.textContent = 'GPS AKTIF';
   $banner.textContent = 'MEMANTAU KECEPATAN…';
-
-  $start.disabled = true;
-  $stop.disabled  = false;
+  $start.disabled = true; $stop.disabled = false;
 }
 
 function stopTracking() {
-  if (watchId != null) {
-    navigator.geolocation.clearWatch(watchId);
-    watchId = null;
-  }
-  clearInterval(durTimer);
-  stopAlertBeep();
-
+  if (watchId != null) { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  clearInterval(durTimer); stopAlertBeep();
   overAlert = false;
-  $num.textContent  = '0';
-  $num.classList.remove('over');
-  $banner.classList.remove('over');
-  setArc(0);
-
+  $num.textContent = '0'; $num.classList.remove('over');
+  $banner.classList.remove('over'); setArc(0);
   $dot.classList.remove('active','warning');
-  $lbl.textContent    = 'GPS OFF';
+  $lbl.textContent = 'GPS OFF';
   $banner.textContent = 'PEMANTAUAN DIHENTIKAN';
-  $acc.textContent    = '';
-
-  $start.disabled = false;
-  $stop.disabled  = true;
+  $acc.textContent = '';
+  $start.disabled = false; $stop.disabled = true;
 }
 
 function toggleMute() {
@@ -602,6 +830,9 @@ function toggleMute() {
   if (muted) stopAlertBeep();
   else if (overAlert) startAlertBeep();
 }
+
+// init badge
+updateLogBadge();
 </script>
 </body>
 </html>
